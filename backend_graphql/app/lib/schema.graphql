@@ -1,0 +1,82 @@
+type Usuarios {
+    _id: ID,
+    nombre: String,
+    apellido: String,
+    edad: String,
+    genero: String
+    libro: [Libros]
+}
+
+type Libros{
+    _id: ID,
+    titulo: String,
+    descripcion: String,
+    autor: [Autores]
+}
+
+type Autores{
+    autor: String
+}
+input AutorInput{
+    autor: String!
+}
+input EditarAutor{
+    autor: String
+}
+input UsuarioInput{
+    nombre: String!,
+    apellido: String!,
+    edad: String!,
+    genero: String!
+
+}
+
+input LibroInput{
+    titulo: String!
+    descripcion: String
+
+}
+input editarUsuarioInput{
+    nombre: String,
+    apellido: String,
+    edad: String,
+    genero: String
+
+}
+
+input editarLibroInput{
+    titulo: String,
+    descripcion: String
+
+}
+
+type Query {
+    # obtener todos los Usuarios
+    getUsers: [Usuarios]
+    # obtener un solo usuario
+    getUser(nombre: String): Usuarios  
+    # obtener todos los Libros
+    getBooks: [Libros]
+    # obtener un solo Libro
+    getBook(titulo: String): Libros  
+
+}
+
+type Mutation{
+    # Crear un nuevo usuario
+    crearUsuario(input: UsuarioInput!): Usuarios
+    # Editar un libro
+    editarUsuario(nombre: String, input: editarUsuarioInput!): Usuarios
+    # Crear un nuevo libro
+    crearLibro(input: LibroInput!): Libros
+    # Editar un libro
+    editarLibro(titulo: String, input: editarLibroInput!): Libros
+    # Añadir libro a un Usuario
+    addLibroUser(Libro: String!, nombre:ID!): Usuarios
+    # Añadir un nuevo autor
+    crearAutor(input: AutorInput!): Autores
+    # # Editar autor
+    editarAutor(autor:String!, input: EditarAutor!): Autores
+    # Añadir Autor a un Libro
+    addAutor(titulo: String!, autor:String!): Libros
+}
