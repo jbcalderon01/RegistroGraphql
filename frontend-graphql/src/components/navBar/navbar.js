@@ -1,8 +1,14 @@
 import React from  'react'
-import { NavBarContainer } from './style'
+import { AppBar,Toolbar, Button} from '@material-ui/core'
+import {Link} from 'react-router-dom'
 
 export const BarradeNavegacion = () =>{
     return (
-       <NavBarContainer>Hola</NavBarContainer> 
+<AppBar position="static">
+  <Toolbar style={{justifyContent:'flex-end'}}>
+    <Button ><Link style={{textDecoration: 'none', color: '#ffff'}} to="/register">Crear Usuario</Link></Button>
+    <Button ><Link style={{textDecoration: 'none', color: '#ffff'}} to="/registeredUsers">Usuarios Registrados</Link></Button>
+  </Toolbar>
+</AppBar>
     )
 }

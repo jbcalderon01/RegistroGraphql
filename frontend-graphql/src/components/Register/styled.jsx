@@ -1,4 +1,4 @@
-import styled from 'styled-components'
+import styled, { css  } from 'styled-components'
 
 export const Container1 = styled.div`
     display:flex;
@@ -21,6 +21,8 @@ export const Form = styled.div`
 export const Form_Radio = styled.div`
     display:flex;
     margin-top: 10px;
+    padding: 10px;
+    ${({border}) => border &&css`border: ${border};`}
 `
 export const Form_Date = styled.div`
     display:flex;

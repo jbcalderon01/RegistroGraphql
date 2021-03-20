@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react'
+import React, { useState } from 'react'
 import { useLazyQuery, useMutation, useQuery } from '@apollo/client'
 import './App.css';
 import { CREATE_USER, GET_USERS } from './gql/users';

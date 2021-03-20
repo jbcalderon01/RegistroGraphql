@@ -1,5 +1,5 @@
-import React, {useState,useEffect} from 'react'
-import { useLazyQuery, useMutation, useQuery } from '@apollo/client'
+import React, {useState} from 'react'
+import {useLazyQuery, useMutation } from '@apollo/client'
 import {
         TextField, 
         FormControl,
@@ -8,7 +8,6 @@ import {
         Radio,
         FormLabel,
         Button,
-        Container
     } 
 from '@material-ui/core'
 import { CREATE_USER } from '../../gql/users'
@@ -23,12 +22,21 @@ const Register=()=>{
 
 
 
-    const [usuario, setUsuario] = useState([])
-    const usuarioData=(event)=>{
+    const [usuario, setUsuario] = useState({
+        nombre: "",
+        apellido: "",
+        edad: "",
+        genero: ""
+    })
+
+    // ---- CAPTURANDO EVENTO DE LOS TEXTFIELD -----
+    const usuarioData = ( event )=>{
         setUsuario({...usuario,[event.target.name]:event.target.value})
-        console.log(usuario)
+        console.log( usuario )
     }
 
+    // ---- CHECKDATA DEL FORM ----
+    const [checkData, setCheckData] = useState({})
 
     // ---- CONSUMIENDO API----
     const [crearUsuario, { error: errCreateUser }] = useMutation(CREATE_USER)
@@ -37,8 +45,20 @@ const Register=()=>{
 
 
     const createUser=()=>{
+        usuario.nombre === "" && usuario.apellido === "" && usuario.edad === "" && usuario.genero === "" ? setCheckData({textName: true, textSurname: true, textAge: true, radioGender: true}):
+        usuario.apellido === "" && usuario.genero === "" ? setCheckData({textAge:false, textSurname:true, textName:false, radioGender:true}):
+        usuario.nombre === "" && usuario.genero === "" ? setCheckData({textAge:false, textSurname:false, textName:true, radioGender:true}):
+        usuario.nombre === "" && usuario.apellido === "" ? setCheckData({textName: true, textSurname: true, textAge: false}):
+        usuario.apellido === "" && usuario.edad === "" ? setCheckData({textSurname: true, textAge: true, textName: false}):
+        usuario.nombre === "" && usuario.edad === "" ? setCheckData({textName: true, textAge: true, textSurname: false}):
+        usuario.genero === "" ? setCheckData({textAge:false, textSurname:false, textName:false, radioGender:true}):
+        usuario.apellido === "" ? setCheckData({textSurname: true, textAge:false, textName: false}):
+        usuario.nombre === "" ? setCheckData({textName: true, textSurname: false, textAge:false}):
+        usuario.edad === "" ? setCheckData( {textAge: true, textName: false, textSurname:false}):
         crearUsuario({variables: {data:usuario}})
     }
+    
+
 
     return(
 
@@ -52,36 +72,36 @@ const Register=()=>{
                 <form>
                     <Form_Date>
                         <TextField 
-                            name="nombre" 
-                            label="Nombre" 
-                            variant="outlined" 
-                            onChange={usuarioData}
-                            error
-                            helperText="Ingresa el nombre"
+                            name = "nombre" 
+                            label = "Nombre" 
+                            variant = "outlined" 
+                            onChange = {usuarioData}
+                            error = {checkData.textName}
+                            helperText = {checkData.textName===true?"Ingresa el nombre":""}
                         />
                         <TextField 
-                            name="apellido" 
-                            label="Apellido" 
-                            variant="outlined" 
-                            onChange={usuarioData} 
-                            style={{marginTop:'20px'}}
-                            error
-                            helperText="Ingresa el apellido"
+                            name = "apellido" 
+                            label = "Apellido" 
+                            variant = "outlined" 
+                            onChange = {usuarioData} 
+                            style = {{marginTop:'20px'}}
+                            error = {checkData.textSurname}
+                            helperText={checkData.textSurname === true ? "Ingresa el apellido" : ""}
                         />
                         <TextField 
-                            name="edad" 
-                            label="Edad" 
-                            variant="outlined"  
-                            onChange={usuarioData} 
-                            style={{marginTop:'20px'}}
-                            error
-                            helperText="Ingresa el edad"
+                            name = "edad" 
+                            label = "Edad" 
+                            variant = "outlined"  
+                            onChange = {usuarioData} 
+                            style = {{marginTop:'20px'}}
+                            error = {checkData.textAge}
+                            helperText = {checkData.textAge === true ? "Ingresa la edad" : ""}
                         />
                     </Form_Date>
-                    <Form_Radio>
+                    <Form_Radio border={checkData.radioGender === true ? '1px solid red' : '' }>
                         <FormControl component="fieldset">
                             <FormLabel component="legend">Genero</FormLabel >
-                            <RadioGroup style={{ display:'flex', flexDirection:'row' }} aria-label="gender" name="genero" onChange={usuarioData}>
+                            <RadioGroup style={{ display:'flex', flexDirection:'row' }} aria-label="gender" name="genero" onChange={usuarioData} error>
                                 <FormControlLabel value="Femenino" control={<Radio />} label="Femenino" />
                                 <FormControlLabel value="Masculino" control={<Radio />} label="Masculino" />
                                 <FormControlLabel value="Otro" control={<Radio />} label="Otro" />
@@ -89,9 +109,8 @@ const Register=()=>{
                         </FormControl>
                     </Form_Radio>
                     <Button_Container>
-                        <Button variant="contained" color="primary" onClick={()=>createUser()}>REGISTRAR</Button><br></br>
-                        
-                    <Button variant="contained" color="secondary" onClick={()=>getUsers()}>Mostrar Usuarios</Button>
+                        <Button variant="contained" color="primary" onClick={()=>createUser()}>Crear Usuario</Button><br></br>
+                        <Button variant="contained" color="secondary" onClick={()=>getUsers()}>Mostrar Usuarios</Button>
                     </Button_Container>
                 </form>
             </Form>
