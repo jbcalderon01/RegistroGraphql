@@ -4,9 +4,11 @@ export const Container1 = styled.div`
     display:flex;
     justify-content: center;
     padding: 50px;
-
 `
 export const Form_Container = styled.div `
+    display:flex;
+    flex-direction: column;
+    align-items:center;
     background-color: #EDEDED;
     box-shadow: 9px 22px 23px -7px rgba(0,0,0,0.28);
     border-radius: 58px 58px 58px 58px;

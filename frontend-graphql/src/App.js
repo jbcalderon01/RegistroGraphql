@@ -37,8 +37,7 @@ function App() {
       <button onClick={handleRegister}>Crear usuario</button>
       {!!((loading && !error) || (loadBooks && !errBooks)) && <span>Cargando datos...</span>}
         {data?.getUsers?.map(user => <span key={user._id}>{user.nombre}<br/></span>)}
-        
-    </div>
+  </div>
   );
 }
 

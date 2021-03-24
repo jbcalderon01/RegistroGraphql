@@ -10,6 +10,9 @@ import {
   Route
 } from 'react-router-dom'
 import { RegisteredUsers } from './components/usersRegistered/usersRegistered'
+// import InputHooks from './InputHooks'
+
+
 const client = new ApolloClient({
   uri: 'http://localhost:4000 ',
   cache: new InMemoryCache()
@@ -20,6 +23,9 @@ ReactDOM.render(
     <Router>
       <BarradeNavegacion/>
       <Switch>
+        <Route path="/home" exact>
+            {/* <InputHooks/> */}
+        </Route>
         <Route path="/register">
         <ApolloProvider client={client}>
         {/* <App /> */}

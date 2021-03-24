@@ -33,6 +33,7 @@ module.exports={
             } catch (error) {
                 console.error(error)
             }
+            console.log(autores)
             return autorData
         }
     }

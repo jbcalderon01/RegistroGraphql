@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import {useLazyQuery, useMutation } from '@apollo/client'
 import {
         TextField, 
@@ -14,13 +14,27 @@ import { CREATE_USER } from '../../gql/users'
 import { GET_USERS } from '../../gql/users'
 import { Form, Form_Radio, Form_Date, Titulo, Form_Container, Container1,Button_Container} from './styled'
 import Swal from 'sweetalert2'
-
+import { IconUser } from '../../assets/icons'
+import { onlyLetters } from '../../utils/index'
 
 
 const Register=()=>{
 
 
+    // Declarando el estado
+    const [errors, setError] = useState()
+    const [message, setMessage] = useState('El campo no debe estar vacío')
 
+    // Función para activar el error
+    const errorFunc = ( e,v, m,n) => {
+        setError(v)
+        setMessage(m)
+        setCheckData({...checkData,[n]:v})
+    }
+    useEffect(() => {
+        setError(false)
+        
+    }, [])
 
     const [usuario, setUsuario] = useState({
         nombre: "",
@@ -39,10 +53,11 @@ const Register=()=>{
 
     // ---- CONSUMIENDO API----
     const [crearUsuario, { error: errCreateUser }] = useMutation(CREATE_USER)
-    const [getUsers,{data: dataUsers, loading: loadUsers,error:errorUsers}]= useLazyQuery(GET_USERS, {fetchPolicy: 'network-only'})
+   
 
 
     //----- Funcion Crear Usuario -----
+    const [errorCreateUser, setErrorCreateUser] = useState(true)
     const crearUsr = () => {
         crearUsuario({variables: {data:usuario}, 
             update(cache, { data: crearUsuario }){
@@ -54,37 +69,49 @@ const Register=()=>{
                     }
                 })
             }
-        })
-        setUsuario({nombre:"",apellido:"",edad:""})
+        }).catch(error => setErrorCreateUser(false))
+
+        errorCreateUser ?
         Swal.fire({
-            position: 'top-end',
+            position: 'top',
             icon: 'success',
-            title: 'Usuario Registrado Correctamente',
-            showConfirmButton: false,
-            timer: 1500
-          })
+            title: 'Usuario registrado correctamente',
+            showConfirmButton: true,
+        })   : 
+        Swal.fire({
+                position: 'top',
+                icon: 'error',
+                title: 'A ocurrido un error al crear el usuario, intenta de nuevo',
+                showConfirmButton: true,
+            }) 
+        setUsuario({nombre:"",apellido:"",edad:"",genero:""})
     }
-
-
+    const validations = e => {
+        // Valida que el campo sea solo letras
+        if (e.target.value) {
+            if (onlyLetters(e.target.value)) return errorFunc(e, true, 'El campo debe contener solo letras',e.target.name)
+            else errorFunc(e, false, 'si estas ingresando letras',e.target.name)
+        }
+        if(!errors) return setUsuario({ ...usuario, [e.target.name]:e.target.value}) 
+    }
+    //--- FUNCION CREAR USUARIO CON VALIDACION DE DATOS ---
     const createUser=()=>{
-        usuario.nombre === "" && usuario.apellido === "" && usuario.edad === "" && usuario.genero === "" ? setCheckData({textName: true, textSurname: true, textAge: true, radioGender: true}):
-        usuario.apellido === "" && usuario.genero ==="" && usuario.edad === "" ? setCheckData({textAge:true,radioGender:true,textSurname:true, textName:false}):
-        usuario.nombre === "" && usuario.genero === "" && usuario.edad === "" ? setCheckData({textName:true, radioGender: true, textAge: true, textSurname:false}):
-        usuario.apellido === "" && usuario.nombre === "" && usuario.genero === "" ? setCheckData({textSurname:true,textAge:false,radioGender:true,textName:true}):
-        usuario.apellido === "" && usuario.nombre === "" && usuario.edad === "" ? setCheckData({textSurname:true,textAge:true,radioGender:false,textName:true}):
-        usuario.apellido === "" && usuario.genero === "" ? setCheckData({textAge:false, textSurname:true, textName:false, radioGender:true}):
-        usuario.nombre === "" && usuario.genero === "" ? setCheckData({textAge:false, textSurname:false, textName:true, radioGender:true}):
-        usuario.nombre === "" && usuario.apellido === "" ? setCheckData({textName: true, textSurname: true, textAge: false}):
-        usuario.apellido === "" && usuario.edad === "" ? setCheckData({textSurname: true, textAge: true, textName: false}):
-        usuario.nombre === "" && usuario.edad === "" ? setCheckData({textName: true, textAge: true, textSurname: false}):
-        usuario.genero === "" ? setCheckData({textAge:false, textSurname:false, textName:false, radioGender:true}):
-        usuario.apellido === "" ? setCheckData({textSurname: true, textAge:false, textName: false}):
-        usuario.nombre === "" ? setCheckData({textName: true, textSurname: false, textAge:false}):
-        usuario.edad === "" ? setCheckData( {textAge: true, textName: false, textSurname:false}):
+        usuario.nombre === "" && usuario.apellido === "" && usuario.edad === "" && usuario.genero === "" ? setCheckData({nombre: true, apellido: true, edad: true, radioGender: true}):
+        usuario.apellido === "" && usuario.genero ==="" && usuario.edad === "" ? setCheckData({edad:true,radioGender:true,apellido:true, nombre:false}):
+        usuario.nombre === "" && usuario.genero === "" && usuario.edad === "" ? setCheckData({nombre:true, radioGender: true, edad: true, apellido:false}):
+        usuario.apellido === "" && usuario.nombre === "" && usuario.genero === "" ? setCheckData({apellido:true,edad:false,radioGender:true,nombre:true}):
+        usuario.apellido === "" && usuario.nombre === "" && usuario.edad === "" ? setCheckData({apellido:true,edad:true,radioGender:false,nombre:true}):
+        usuario.apellido === "" && usuario.genero === "" ? setCheckData({edad:false, apellido:true, nombre:false, radioGender:true}):
+        usuario.nombre === "" && usuario.genero === "" ? setCheckData({edad:false, apellido:false, nombre:true, radioGender:true}):
+        usuario.nombre === "" && usuario.apellido === "" ? setCheckData({nombre: true, apellido: true, edad: false,radioGender: false}):
+        usuario.apellido === "" && usuario.edad === "" ? setCheckData({apellido: true, edad: true, nombre: false,radioGender: false}):
+        usuario.nombre === "" && usuario.edad === "" ? setCheckData({nombre: true, edad: true, apellido: false,radioGender: false}):
+        usuario.edad === "" && usuario.genero === "" ? setCheckData({radioGender: true, edad: true, nombre: false, apellido: false}):
+        usuario.genero === "" ? setCheckData({edad:false, apellido:false, nombre:false, radioGender:true}):
+        usuario.apellido === "" ? setCheckData({apellido: true, edad:false, nombre: false}):
+        usuario.nombre === "" ? setCheckData({nombre: true, apellido: false, edad:false}):
+        usuario.edad === "" ? setCheckData( {edad: true, nombre: false, apellido:false}):
         crearUsr()
-        
-
-
     }
     
 
@@ -94,6 +121,7 @@ const Register=()=>{
         <>
         <Container1>
             <Form_Container>
+                <IconUser  size='100px'/>
             <Titulo>
                 Crear Usuario
             </Titulo>
@@ -104,35 +132,39 @@ const Register=()=>{
                             name = "nombre" 
                             label = "Nombre" 
                             variant = "outlined" 
-                            onChange = {usuarioData}
-                            error = {checkData.textName}
-                            helperText = {checkData.textName===true?"Ingresa el nombre":""}
+                            onChange = {validations}
+                            error = {checkData.nombre}
+                            helperText = {checkData.nombre === true ? "Ingresa el nombre" : ""}
+                            required
                             value={usuario.nombre}
                         />
                         <TextField 
                             name = "apellido" 
                             label = "Apellido" 
                             variant = "outlined" 
-                            onChange = {usuarioData} 
+                            onChange = {validations} 
+                            value = {usuario.apellido}
                             style = {{marginTop:'20px'}}
-                            error = {checkData.textSurname}
-                            helperText={checkData.textSurname === true ? "Ingresa el apellido" : ""}
-                            value={usuario.apellido}
+                            error = {checkData.apellido}
+                            helperText = {checkData.apellido === true ? "Ingresa el apellido" : ""}
+                            required
                         />
                         <TextField 
+                            type="number"
                             name = "edad" 
                             label = "Edad" 
                             variant = "outlined"  
                             onChange = {usuarioData} 
                             style = {{marginTop:'20px'}}
-                            error = {checkData.textAge}
-                            helperText = {checkData.textAge === true ? "Ingresa la edad" : ""}
+                            error = {checkData.edad}
+                            helperText = {checkData.edad === true ? "Ingresa la edad" : ""}
                             value = {usuario.edad} 
+                            required
                         />
                     </Form_Date>
                     <Form_Radio border={checkData.radioGender === true ? '1px solid red' : '' }>
                         <FormControl component="fieldset">
-                            <FormLabel component="legend">Genero</FormLabel >
+                            <FormLabel component="legend">Genero *</FormLabel >
                             <RadioGroup style={{ display:'flex', flexDirection:'row' }} aria-label="gender" name="genero" onChange={usuarioData}>
                                 <FormControlLabel value="Femenino" control={<Radio />} label="Femenino" />
                                 <FormControlLabel value="Masculino" control={<Radio />} label="Masculino" />

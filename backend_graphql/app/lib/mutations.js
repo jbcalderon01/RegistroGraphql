@@ -97,21 +97,7 @@ module.exports = {
 
         }
         return usuario
-    },
-    crearAutor: async (root, {
-        input
-    }) => {
-        let db
-        let autor
-        try {
-            db = await connectDB()
-            autor = await db.collection('autores').insertOne(input)
-            input._id = autor.insertedId
-        } catch (error) {
-            console.log(error)
-        }
-        return input
-    },    
+    },   
     editarAutor: async (root,  { 
         autor,
         input
